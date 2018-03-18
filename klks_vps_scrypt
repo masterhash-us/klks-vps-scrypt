@@ -1,0 +1,197 @@
+#!/bin/bash
+# This script is a derivative work of the code from the following projects:
+# Galactrum - https://www.galactrum.org/
+# Innova Coin - https://innovacoin.info/
+# and this copy was pulled from github user Drhobbi
+
+# Modified for klks by ak3
+
+REL="$(lsb_release -rs)"
+
+clear
+cd ~
+cat <<'klks'
+  		                -/sydmNNNNmdhs+-`
+         	            `+hNmdddhyysssyhdddmNdo.
+                         :hMmdhso/::::::::::/osyddMd/
+                       -dMdhy+::::oo::::::+s::::/yhhNm:
+                      oMdhy:::::::yMmo::+dMh:::::::shhMy`
+                     yMhh/::::::::yMMMyoMMMh::::::::/dyMd`
+                    sMhd//////::::yMMMhsMMMh::::+++++/dyMh
+                   -Mdd/:+dMMMNy::yMMMhsMMMh::sNMMMmo:/mhM/
+                   sMyh::::+dMMMNyhMMMhsMMMdsNMMMmo::::yyMd
+                   dMyo::::::+dMMMMMMMhsMMMMMMMmo::::::ohNM
+                   dMyo::::::/hMMMMMMMhsMMMMMMMd+::::::ohNM
+                   sMyh::::/hMMMMhhMMMhsMMMdyNMMMd+::::yyMd
+                   -Mdd/:/hMMMMh/:yMMMhsMMMh:/yNMMMd+:/myM/
+                    sMyd/ooooo/:::yMMMhsMMMh:::/ooooo/dyMh
+                     yMyh/::::::::yMMMysMMMh::::::::/dyNd`
+                      oMdhs:::::::yMNs::omMh:::::::shhMy`
+                       -dNdhs/::::os::::::oy::::/shhNm:
+                         :hNddys+/:::::::::::+syddNd/
+                           .+hNmddhyssssssyhdddNdo.
+                               -+shdmNmmNmdhs+-`
+klks
+echo && echo && echo
+sleep 1
+cat << "klks1"
+MM    MM   AAA    SSSSS  TTTTTTT EEEEEEE RRRRRR  NN   NN  OOOOO  DDDDD   EEEEEEE
+MMM  MMM  AAAAA  SS        TTT   EE      RR   RR NNN  NN OO   OO DD  DD  EE
+MM MM MM AA   AA  SSSSS    TTT   EEEEE   RRRRRR  NN N NN OO   OO DD   DD EEEEE
+MM    MM AAAAAAA      SS   TTT   EE      RR  RR  NN  NNN OO   OO DD   DD EE
+MM    MM AA   AA  SSSSS    TTT   EEEEEEE RR   RR NN   NN  OOOO0  DDDDDD  EEEEEEE
+................................................................................
+klks1
+echo && echo && echo
+sleep 3
+
+read -e -p "This script will automatically install & configure a Kalkulus Masternode on a VPS server. The script is provided without any warranties and support. Do you wish to continue? (y/n)? " response
+
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+
+    # Gather input from user
+    read -e -p "Masternode Private Key (In your main wallet: type command masternode genkey in the Debug console. Result e.g. 7edfjLCUzGczZi3JQw8GHp434R9kNY33eFyMGeKRymkB56G4324h) : " key
+    if [[ "$key" == "" ]]; then
+        echo "WARNING: No private key entered, exiting!!!"
+        echo && exit
+    fi
+    read -e -p "Server IP Address (Without Port): " ip
+    echo && echo "Pressing ENTER will use the default value for the next prompts."
+    echo && sleep 3
+    read -e -p "Add swap space? (Recommended for VPS's that have 2GB of memory or less) [Y/n] : " add_swap
+    if [[ ("$add_swap" == "y" || "$add_swap" == "Y" || "$add_swap" == "") ]]; then
+        read -e -p "Swap Size [4G] : " swap_size
+        if [[ "$swap_size" == "" ]]; then
+            swap_size="4G"
+        fi
+    fi
+    read -e -p "Install Fail2ban? (Recommended) [Y/n] : " install_fail2ban
+    read -e -p "Install UFW and configure ports? (Recommended) [Y/n] : " UFW
+
+    # Add swap if needed
+    if [[ ("$add_swap" == "y" || "$add_swap" == "Y" || "$add_swap" == "") ]]; then
+        if [ ! -f /swapfile ]; then
+            echo && echo "Adding swap space..."
+            sleep 3
+            sudo fallocate -l $swap_size /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+            sudo sysctl vm.swappiness=10
+            sudo sysctl vm.vfs_cache_pressure=50
+            echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
+            echo 'vm.vfs_cache_pressure=50' | sudo tee -a /etc/sysctl.conf
+        else
+            echo && echo "WARNING: Swap file detected, skipping add swap!"
+            sleep 3
+        fi
+    fi
+
+    # Update system 
+    echo && echo "Upgrading system..."
+    sleep 3
+    sudo apt-get -y update
+    sudo apt-get -y dist-upgrade
+
+    # Add Berkely PPA
+    echo && echo "Installing bitcoin PPA..."
+    sleep 3
+    sudo apt-get -y install software-properties-common pwgen unzip libevent-dev libgmp3-dev libssl-dev bsdmainutils nano htop pwgen
+    sudo apt-add-repository -y ppa:bitcoin/bitcoin
+    sudo apt-get -y update
+
+    # Install required packages
+    echo && echo "Installing base packages..."
+    sleep 3
+    sudo apt-get -y install \
+        libboost-all-dev \
+        libdb4.8-dev \
+        libdb4.8++-dev
+    if [ "16.04" == "${REL}" ]; then
+    sudo apt-get -y install libzmq5 libminiupnpc10
+    else
+    sudo apt-get -y install libzmq3 libminiupnpc8
+    fi
+
+    # Install fail2ban if needed
+    if [[ ("$install_fail2ban" == "y" || "$install_fail2ban" == "Y" || "$install_fail2ban" == "") ]]; then
+        echo && echo "Installing fail2ban..."
+        sleep 3
+        sudo apt-get -y install fail2ban
+        sudo service fail2ban restart 
+    fi
+
+    # Install firewall if needed
+    if [[ ("$UFW" == "y" || "$UFW" == "Y" || "$UFW" == "") ]]; then
+        echo && echo "Installing UFW..."
+        sleep 3
+        sudo apt-get -y install ufw
+        echo && echo "Configuring UFW..."
+        sleep 3
+        sudo ufw default deny incoming
+        sudo ufw default allow outgoing
+        sudo ufw allow ssh
+        sudo ufw limit ssh/tcp
+        sudo ufw allow 51121/tcp
+        sudo ufw logging on
+        echo "y" | sudo ufw enable
+        echo && echo "Firewall installed and enabled!"
+    fi
+
+    # Download klks-Coin
+    echo && echo "Downloading KLKS sources"
+    sleep 3
+    cd ~
+    wget -t0 -c "http://kalkulus.trade/vault/klks.zip"
+    unzip -u "klks.zip"
+
+    chmod +x ~/klks-cli ~/klksd
+    sudo cp -f ~/klks-cli /usr/local/bin
+    sudo cp -f ~/klksd /usr/local/sbin
+
+    #Checking if we are under root user and creating unpriviliged account
+    myuser="$(whoami)"
+    klksmnuser="klksmn"
+
+    #Creating klks unprivileged user for klks daemon
+    echo && echo "Creating 'klksmn' unprivileged user"
+    sudo useradd ${klksmnuser} -s /usr/sbin/nologin
+
+    #Creating configuration directory
+    echo && echo "Creating configuratoin directory"
+    sudo mkdir -p /home/${klksmnuser}/.klks
+    sudo chown ${myuser}:${klksmnuser} -R /home/${klksmnuser}
+    sudo chmod 770 -R /home/${klksmnuser}
+
+
+    datadir="-datadir=/home/${klksmnuser}/.klks"
+    OPTIONS="${datadir} -daemon"
+
+    #Adding aliases
+    echo -e "\nalias klks-cli='sudo -u ${klksmnuser} klks-cli ${datadir}'\nalias klksd='sudo -u ${klksmnuser} klksd ${datadir}'\n" >> ~/.bash_aliases
+    . ~/.bash_aliases
+
+    # Create config for klks-Coin
+    echo && echo "Configuring klks-Coin..."
+    sleep 3
+
+    sudo -u ${klksmnuser} klksd ${OPTIONS} >/dev/null 2>&1
+    sleep 5
+
+    sudo chown ${myuser}:${klksmnuser} /home/${klksmnuser}/.klks/klks.conf
+
+    rpcuser=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
+    rpcpass=`pwgen -1 20 -n`
+
+    echo -e "maxconnections=64\nrpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nexternalip=${ip}:51121\nmasternode=1\nmasternodeprivkey=${key}\naddnode=209.250.242.79:51121\naddnode=45.63.99.2:51121\naddnode=45.77.226.205:51121\naddnode=199.247.28.77:51121\naddnode=45.32.151.186:51121" > /home/${klksmnuser}/.klks/klks.conf
+
+    echo && echo "Starting klks-Coin daemon"
+    sudo -u ${klksmnuser}  klksd ${OPTIONS}
+
+    cd ~
+    echo && echo && echo
+    echo "Kalkulus Masternode installation successfully completed. Now you need to wait at least 20 confirmations before to start your masternode from your local wallet. If you don't wait needed confirmations your masternode wil not worl properly. For any info or support visit official website http://kalkulus.trade"
+else
+    echo "installation cancelled"
+fi
