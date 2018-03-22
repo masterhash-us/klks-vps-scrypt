@@ -4,7 +4,7 @@
 <p>Login to your VPS with your credential using Putty.</p>
 <p>Download and execute script with following commands:&nbsp;</p>
 <p><em>git clone&nbsp;<a href="https://github.com/kalkulusteam/klks-vps-scrypt.git">https://github.com/kalkulusteam/klks-vps-scrypt.git</a></em></p>
-<p><em>chmod +x klks_vps_scrypt.sh</em></p>
+<p><em>chmod +x klks_vps_scrypt</em></p>
 <p><em>./klks_vps_scrypt</em></p>
 <p>The script will now be executed, and will require following information:</p>
 <ul>
