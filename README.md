@@ -1,6 +1,9 @@
-<p><a href="http://www.kalkulus.trade/"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/TDhrEOP.png" /></a></p>
-<p style="text-align: center;">&nbsp;</p>
-<p><strong>Kalkulus VPS Installation Scrypt</strong><br /><br /> This simple scrypt automatically install and setup your VPS server for running a Kalkulus masternode.</p>
+<p><a href="http://www.kalkulus.trade/"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/TDhrEOP.png" /></a>&nbsp;</p>
+<h2>Kalkulus VPS Installation Scrypt</h2>
+<p>--------------------------------------------------------------------------------------------------------------------</p>
+<p><strong>**Please note: </strong>this script is still working but the support is discontinued. If you are looking for an automated way to deploy a masternode without any skill or without compiling libraries we suggest to register an account on&nbsp;<a href="https://hub.kalkul.us/" target="_blank" rel="noopener">https://hub.kalkul.us</a> for esy masternode deployment.</p>
+<p>--------------------------------------------------------------------------------------------------------------------</p>
+<p><br /> This simple scrypt automatically install and setup your VPS server for running a Kalkulus masternode.</p>
 <p>Login to your VPS with your credential using Putty.</p>
 <p>Download and execute script with following commands:&nbsp;</p>
 <p><em>git clone&nbsp;<a href="https://github.com/kalkulusteam/klks-vps-scrypt.git">https://github.com/kalkulusteam/klks-vps-scrypt.git</a></em></p>
