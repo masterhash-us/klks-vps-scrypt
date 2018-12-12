@@ -59,7 +59,6 @@ sleep 3
     echo && echo "Pressing ENTER will use the default value for the next prompts."
     echo && sleep 3
        
-    fi
     read -e -p "Install Fail2ban? (Recommended) [Y/n] : " install_fail2ban
     read -e -p "Install UFW and configure ports? (Recommended) [Y/n] : " UFW
 
