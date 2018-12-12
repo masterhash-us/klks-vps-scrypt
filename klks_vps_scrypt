@@ -43,7 +43,7 @@ MM    MM AA   AA  SSSSS    TTT   EEEEEEE RR   RR NN   NN  OOOO0  DDDDDD  EEEEEEE
 ................................................................................
 klks1
 echo && echo && echo
-sleep 3
+sleep 1
 
 # read -e -p "This script will automatically install & configure a Kalkulus Masternode on a VPS server. The script is provided without any warranties and support. Do you wish to continue? (y/n)? " response
 
@@ -57,11 +57,8 @@ sleep 3
     fi
     ip=$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)
     echo && echo "Pressing ENTER will use the default value for the next prompts."
-    echo && sleep 3
+    echo && sleep 1
        
-    read -e -p "Install Fail2ban? (Recommended) [Y/n] : " install_fail2ban
-    read -e -p "Install UFW and configure ports? (Recommended) [Y/n] : " UFW
-
     # Update system 
     echo && echo "Upgrading system..."
     sleep 3
@@ -89,15 +86,12 @@ sleep 3
     fi
 
     # Install fail2ban if needed
-    if [[ ("$install_fail2ban" == "y" || "$install_fail2ban" == "Y" || "$install_fail2ban" == "") ]]; then
         echo && echo "Installing fail2ban..."
         sleep 3
         sudo apt-get -y install fail2ban
         sudo service fail2ban restart 
-    fi
-
+    
     # Install firewall if needed
-    if [[ ("$UFW" == "y" || "$UFW" == "Y" || "$UFW" == "") ]]; then
         echo && echo "Installing UFW..."
         sleep 3
         sudo apt-get -y install ufw
@@ -111,8 +105,7 @@ sleep 3
         sudo ufw logging on
         echo "y" | sudo ufw enable
         echo && echo "Firewall installed and enabled!"
-    fi
-
+   
     # Download klks-Coin
     echo && echo "Downloading KLKS sources"
     sleep 3
