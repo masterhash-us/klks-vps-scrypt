@@ -62,8 +62,6 @@ sleep 3
     read -e -p "Install Fail2ban? (Recommended) [Y/n] : " install_fail2ban
     read -e -p "Install UFW and configure ports? (Recommended) [Y/n] : " UFW
 
-   fi
-
     # Update system 
     echo && echo "Upgrading system..."
     sleep 3
