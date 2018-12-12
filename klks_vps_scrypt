@@ -45,9 +45,9 @@ klks1
 echo && echo && echo
 sleep 3
 
-read -e -p "This script will automatically install & configure a Kalkulus Masternode on a VPS server. The script is provided without any warranties and support. Do you wish to continue? (y/n)? " response
+# read -e -p "This script will automatically install & configure a Kalkulus Masternode on a VPS server. The script is provided without any warranties and support. Do you wish to continue? (y/n)? " response
 
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+# if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 
     # Gather input from user
     read -e -p "Masternode Private Key (In your main wallet: type command masternode genkey in the Debug console. Result e.g. 7edfjLCUzGczZi3JQw8GHp434R9kNY33eFyMGeKRymkB56G4324h) : " key
@@ -55,38 +55,15 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         echo "WARNING: No private key entered, exiting!!!"
         echo && exit
     fi
-    read -e -p "Server IP Address (Without Port): " ip
+    ip=$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)
     echo && echo "Pressing ENTER will use the default value for the next prompts."
     echo && sleep 3
-    read -e -p "Add swap space? (Recommended for VPS's that have 2GB of memory or less) [Y/n] : " add_swap
-    if [[ ("$add_swap" == "y" || "$add_swap" == "Y" || "$add_swap" == "") ]]; then
-        read -e -p "Swap Size [4G] : " swap_size
-        if [[ "$swap_size" == "" ]]; then
-            swap_size="4G"
-        fi
+       
     fi
     read -e -p "Install Fail2ban? (Recommended) [Y/n] : " install_fail2ban
     read -e -p "Install UFW and configure ports? (Recommended) [Y/n] : " UFW
 
-    # Add swap if needed
-    if [[ ("$add_swap" == "y" || "$add_swap" == "Y" || "$add_swap" == "") ]]; then
-        if [ ! -f /swapfile ]; then
-            echo && echo "Adding swap space..."
-            sleep 3
-            sudo fallocate -l $swap_size /swapfile
-            sudo chmod 600 /swapfile
-            sudo mkswap /swapfile
-            sudo swapon /swapfile
-            echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-            sudo sysctl vm.swappiness=10
-            sudo sysctl vm.vfs_cache_pressure=50
-            echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
-            echo 'vm.vfs_cache_pressure=50' | sudo tee -a /etc/sysctl.conf
-        else
-            echo && echo "WARNING: Swap file detected, skipping add swap!"
-            sleep 3
-        fi
-    fi
+   fi
 
     # Update system 
     echo && echo "Upgrading system..."
@@ -143,12 +120,12 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo && echo "Downloading KLKS sources"
     sleep 3
     cd ~
-    wget -t0 -c "http://kalkulus.trade/vault/klks.zip"
-    unzip -u "klks.zip"
+    wget -t0 -c "https://github.com/kalkulusteam/klks/releases/download/2.7.0/klks-2.7.0_linux64.tar.gz"
+    tar -xvf "klks-2.7.0_linux64.tar.gz"
 
-    chmod +x ~/klks-cli ~/klksd
-    sudo cp -f ~/klks-cli /usr/local/bin
-    sudo cp -f ~/klksd /usr/local/sbin
+    chmod +x ~/klks-2.7.0_linux64/klks-cli ~/klksd
+    sudo cp -f ~/klks-2.7.0_linux64/klks-cli /usr/local/bin
+    sudo cp -f ~/klks-2.7.0_linux64/klksd /usr/local/sbin
 
     #Checking if we are under root user and creating unpriviliged account
     myuser="$(whoami)"
@@ -184,7 +161,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     rpcuser=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
     rpcpass=`pwgen -1 20 -n`
 
-    echo -e "maxconnections=64\nrpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nexternalip=${ip}:51121\nmasternode=1\nmasternodeprivkey=${key}\naddnode=209.250.242.79:51121\naddnode=45.63.99.2:51121\naddnode=45.77.226.205:51121\naddnode=199.247.28.77:51121\naddnode=45.32.151.186:51121" > /home/${klksmnuser}/.klks/klks.conf
+    echo -e "maxconnections=64\nrpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nexternalip=${ip}\nmasternode=1\nmasternodeprivkey=${key}\naddnode=209.250.242.79:51121\naddnode=45.63.99.2:51121\naddnode=45.77.226.205:51121\naddnode=199.247.28.77:51121\naddnode=45.32.151.186:51121" > /home/${klksmnuser}/.klks/klks.conf
 
     echo && echo "Starting klks-Coin daemon"
     sudo -u ${klksmnuser}  klksd ${OPTIONS}
