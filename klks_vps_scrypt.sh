@@ -146,7 +146,7 @@ sleep 1
     rpcuser=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
     rpcpass=`pwgen -1 20 -n`
 
-    echo -e "maxconnections=64\nrpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nexternalip=${ip}\nmasternode=1\nmasternodeprivkey=${key}\naddnode=209.250.242.79:51121\naddnode=45.63.99.2:51121\naddnode=45.77.226.205:51121\naddnode=199.247.28.77:51121\naddnode=45.32.151.186:51121\naddnode=[2001:67c:27e4:11::68f8:ac18]:51121\naddnode=[2001:19f0:5001:2f19:2111::1]:51121\naddnode=[2001:19f0:5001:2637:2111::2]:51121\naddnode=[2001:19f0:5001:2637:2111::4]:51121\naddnode=[2a01:6e60:10:aa4:65b4::1]:51121\naddnode=[2001:19f0:5001:2637:2111::3]:51121\" > /home/${klksmnuser}/.klks/klks.conf
+    echo -e "maxconnections=64\nrpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nexternalip=${ip}\nmasternode=1\nmasternodeprivkey=${key}\naddnode=209.250.242.79:51121\naddnode=45.63.99.2:51121\naddnode=45.77.226.205:51121\naddnode=199.247.28.77:51121\naddnode=45.32.151.186:51121\naddnode=[2001:67c:27e4:11::68f8:ac18]:51121\naddnode=[2001:19f0:5001:2f19:2111::1]:51121\naddnode=[2001:19f0:5001:2637:2111::2]:51121\naddnode=[2001:19f0:5001:2637:2111::4]:51121\naddnode=[2a01:6e60:10:aa4:65b4::1]:51121\naddnode=[2001:19f0:5001:2637:2111::3]:51121" > /home/${klksmnuser}/.klks/klks.conf
 
     echo && echo "Starting klks-Coin daemon"
     sudo -u ${klksmnuser}  klksd ${OPTIONS}
