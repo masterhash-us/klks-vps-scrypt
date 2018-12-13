@@ -153,6 +153,6 @@ sleep 1
 
     cd ~
     echo && echo && echo
-    echo "Kalkulus Masternode installation successfully completed. Now you need to wait at least 20 confirmations before to start your masternode from your local wallet. Your masternode is syncing. Please wait for this process to finish. This can take up to a few hours.If you don't wait your masternode will not work properly. For any info or support visit official website http://kalkulus.trade"
+    echo "Kalkulus Masternode installation successfully completed. Now you need to wait at least 20 confirmations before to start your masternode from your local wallet. Your masternode is syncing. Please wait for this process to finish. This can take up to a few hours.If you don't wait your masternode will not work properly."
 echo "installation COMPLETE"
 fi
