@@ -153,4 +153,4 @@ sleep 1
 
     cd ~
      echo "installation COMPLETE"
-fi
+
